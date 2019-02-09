@@ -3,7 +3,7 @@ package glug
 import (
 	"bytes"
 	"fmt"
-	"html/template"
+	"text/template"
 	"time"
 )
 
@@ -17,7 +17,7 @@ type Span interface {
 
 type span struct {
 	name    string
-	args    []interface{}
+	fmtMap  map[string]interface{}
 	start   time.Time
 	elapsed time.Duration
 }
@@ -25,20 +25,22 @@ type span struct {
 func (ts *span) Finish() {
 	ts.elapsed = time.Now().Sub(ts.start)
 	fields := map[string]interface{}{
-		"duration":    ts.elapsed,
-		"durationStr": fmtDuration(ts.elapsed),
-		"args":        ts.args,
+		"traceDuration":    ts.elapsed,
+		"traceDurationStr": fmtDuration(ts.elapsed),
+	}
+	for k, v := range ts.fmtMap {
+		fields[k] = v
 	}
 	msg := fmtLogEntry(ts.name, fields)
-	InfofDepth(3, msg, ts.args...)
+	InfoDepth(3, msg)
 }
 
 func StartSpan(name string) Span {
 	return &span{name: name, start: time.Now()}
 }
 
-func Tracef(format string, args ...interface{}) Span {
-	return StartSpan(fmt.Sprintf(format, args...))
+func Tracef(format string, fmtMap map[string]interface{}) Span {
+	return &span{name: format, fmtMap: fmtMap, start: time.Now()}
 }
 
 // FIXME(msolo) slow
