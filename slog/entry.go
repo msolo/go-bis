@@ -183,6 +183,6 @@ func (esl *entrySlogger) log(level Level, msg string) {
 		ent.source = fmt.Sprintf("%s:%d", file, line)
 	}
 	if err := esl.handler.WriteEntry(ent); err != nil {
-		println("log write failed:", err)
+		println("log write failed:", err.Error())
 	}
 }

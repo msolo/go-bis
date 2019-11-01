@@ -25,25 +25,25 @@ func (le logEntry) Fields() slog.Fields {
 }
 
 func main() {
-	binfile := flag.String("log.binfile", "", "Set up a binary log format.")
+	logFmt := flag.String("log.fmt", "", "Set log format.")
 	cfg := &slog.Config{}
 	slog.RegisterFlags(flag.CommandLine, cfg)
 	flag.Parse()
 
 	slog.CopyStandardLogTo("WARN")
 
-	if *binfile != "" {
-		f, err := os.OpenFile(*binfile, os.O_WRONLY|os.O_APPEND, 0666)
-		if err != nil {
-			log.Fatalln(err)
-		}
-
-		jlogH := slog.NewHandler(f, slog.JsonFmtEntry)
-		slog.SetHandler(
-			slog.NewLevelHandler(
-				slog.NewMultiHandler(slog.GetHandler(), jlogH),
-				cfg))
+	fmtEntry := slog.GlogFmtEntry
+	if *logFmt == "json" {
+		fmtEntry = slog.JsonFmtEntry
 	}
+
+	f, err := os.OpenFile(cfg.Fname, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0666)
+	if err != nil {
+		log.Fatalln(err)
+	}
+
+	logH := slog.NewHandler(f, fmtEntry)
+	slog.SetHandler(slog.NewLevelHandler(logH, cfg))
 
 	log.Printf("system logger printf")
 
