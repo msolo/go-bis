@@ -39,7 +39,8 @@ func init() {
 	// Sanitize userName since it may contain filepath separators on Windows.
 	userName = strings.Replace(userName, `\`, "_", -1)
 
-	CopyStandardLogTo("WARNING")
+	// By default, this needs to be visible, so match the default severity.
+	CopyStandardLogTo("ERROR")
 
 	// Default stderrThreshold is ERROR.
 	logging.stderrThreshold = errorLog
