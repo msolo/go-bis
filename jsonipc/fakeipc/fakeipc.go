@@ -7,12 +7,12 @@ import (
 )
 
 type args struct {
-	Arg string
+	Val string
 }
 
 type reply struct {
-	Result string
-	Error  error
+	Val   string
+	Error error
 }
 
 func main() {
@@ -24,7 +24,7 @@ func main() {
 	if err != nil {
 		out.Error = err
 	} else {
-		out.Result = in.Arg
+		out.Val = in.Val
 	}
 	if err := jsWr.Encode(out); err != nil {
 		io.WriteString(os.Stderr, err.Error())

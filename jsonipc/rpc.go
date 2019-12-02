@@ -1,3 +1,6 @@
+// Run the Go JSONRPC over stdio to a child process. This constrains
+// the protocol a bit; there is exactly one arg of JSON type object
+// and all errors must be strings.
 package jsonipc
 
 import (
